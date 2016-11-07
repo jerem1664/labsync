@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-TOKEN="XXXXXXXXXXXXX"
+# synchro your gitlabs projects, in once 
+# Jerem
+
+TOKEN="XXXXXXXXX"
 PREFIX="ssh_url_to_repo" 
 
 function list {
@@ -17,17 +20,18 @@ if [ ! -z $1 ] ; then
                 -l) list ;;
 		-c) for i in `list | cut -d , -f2` ; do mkdir $i; done  ;;
                 -h|--help) 
-		echo "labclone [options] or [PROJECT ID]"
+                echo "labclone [options] or labclone [REPOS_ID] or clone current directory repos"
+		echo ""
 		echo "-h, --help	Print this help"
-		echo "-l		List project id"
-		echo "-c		create projects directories" 
+		echo "-l		List projects id"
+		echo "-c		Create projects directories" 
+		echo "-r		Recursivly clone projects" 
+                echo "-p                Recursivly pull projects (maxdepth=1)" 
 		exit 1 ;;
-                *) clone $1 ;;
+                -r) for i in `ls` ; do cd $i && clone  `pwd | awk -F / '{print $NF}' | cut -d , -f1` && cd - ; done ;; 
+                -p) for i in `ls` ; do cd $i && git pull && cd - ; done ;; 
+                *) clone $1 ;; 
         esac ;
 else
-                echo "labclone [options] or [PROJECT ID]"
-                echo "-h, --help        Print this help"
-		echo "-l		List project id"
-		echo "-c		create projects directories" 
-                exit 1 ;
+                clone `pwd | awk -F / '{print $NF}' | cut -d , -f1`
 fi
